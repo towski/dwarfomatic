@@ -11,8 +11,7 @@ void FooFree(Foo f) {
 	delete foo;
 }
 
-void FooBar(Foo f) {
+char* FooBar(Foo f) {
 	cxxFoo * foo = (cxxFoo*)f;
-	foo->Bar();
+	return foo->Bar();
 }
-

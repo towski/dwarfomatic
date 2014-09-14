@@ -8,7 +8,7 @@ extern "C" {
 	typedef void* Foo;
 	Foo FooInit(void);
 	void FooFree(Foo);
-	void FooBar(Foo);
+	char* FooBar(Foo);
 
 #ifdef __cplusplus
 }

@@ -1,8 +1,19 @@
 package main
 
-// #cgo LDFLAGS: -lfoo
+// /home/towski/save/df_linux/hack/libdfhack.so /home/towski/save/df_linux/hack/liblua.so /home/towski/save/df_linux/hack/libprotobuf-lite.so /home/towski/code/howto-go-with-cpp/libfoo.a /home/towski/save/df_linux/hack/libdfhack-client.so -lstdc++
+
+// #cgo LDFLAGS: /home/towski/code/howto-go-with-cpp/libfoo.a /home/towski/save/df_linux/hack/libprotobuf-lite.so /home/towski/save/df_linux/hack/libdfhack-client.so -lstdc++
 // #include "foo.h"
 import "C"
+import "fmt"
+
+// #cgo CFLAGS: -Ilibrary/include/df -Ilibrary/include/ -Ilibrary/proto -Idepends/protobuf/google/protobuf/ -Idepends/protobuf -std=c++11
+
+type Unit struct {
+    FirstName string
+}
+
+var units []Unit
 
 type GoFoo struct {
 	foo C.Foo
@@ -16,12 +27,12 @@ func New() GoFoo {
 func (f GoFoo) Free() {
 	C.FooFree(f.foo)
 }
-func (f GoFoo) Bar() {
-	C.FooBar(f.foo)
+func (f GoFoo) Bar() string {
+	return C.GoString(C.FooBar(f.foo))
 }
 
 func main() {
 	foo := New()
-	foo.Bar()
+	fmt.Println(foo.Bar())
 	foo.Free()
 }
