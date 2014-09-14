@@ -1,2 +1,5 @@
 *.swp
 a.out
+libfoo.a
+*.o
+foo

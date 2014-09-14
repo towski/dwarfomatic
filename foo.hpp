@@ -6,7 +6,8 @@ public:
 	int a;
 	cxxFoo(int _a):a(_a){};
 	~cxxFoo(){};
-	const char* Bar();
+	const char* Bar(int);
+	void Init();
 };
 
 #endif

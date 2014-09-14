@@ -1,11 +1,11 @@
 .PHONY: clean
 
-TARGET=howto-go-with-cpp
+TARGET=how
 
 $(TARGET): libfoo.a
 	~/save/go/bin/go build foo.go
 
-libfoo.a: foo.o cfoo.o
+libfoo.a: foo.o cfoo.o  #_obj/_cgo_.o
 	ar r $@ $^
 
 %.o: %.cpp

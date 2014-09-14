@@ -27,12 +27,12 @@ func New() GoFoo {
 func (f GoFoo) Free() {
 	C.FooFree(f.foo)
 }
-func (f GoFoo) Bar() string {
-	return C.GoString(C.FooBar(f.foo))
+func (f GoFoo) Bar(i int) string {
+    return C.GoString(C.FooBar(C.int(i)))
 }
 
 func main() {
 	foo := New()
-	fmt.Println(foo.Bar())
+	fmt.Println(foo.Bar(1))
 	foo.Free()
 }

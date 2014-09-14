@@ -1,9 +1,11 @@
 #include "foo.hpp"
 #include "foo.h"
 
+cxxFoo * foo;
 Foo FooInit() {
-	cxxFoo * ret = new cxxFoo(1);
-	return (void*)ret;
+	foo = new cxxFoo(1);
+    foo->Init();
+	return (void*)foo;
 }
 
 void FooFree(Foo f) {
@@ -11,7 +13,6 @@ void FooFree(Foo f) {
 	delete foo;
 }
 
-char* FooBar(Foo f) {
-	cxxFoo * foo = (cxxFoo*)f;
-	return foo->Bar();
+const char* FooBar(int i) {
+	foo->Bar(i);
 }
