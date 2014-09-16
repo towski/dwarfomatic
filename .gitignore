@@ -1,5 +1,7 @@
 *.swp
+public
 a.out
 libfoo.a
+pkg
 *.o
 foo

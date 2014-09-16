@@ -13,6 +13,18 @@ void FooFree(Foo f) {
 	delete foo;
 }
 
-const char* FooBar(int i) {
-	foo->Bar(i);
+int Size() {
+	foo->Size();
+}
+
+const char* GetFirstName(int i) {
+	foo->GetFirstName(i);
+}
+
+const char* GetThoughts(int i) {
+	foo->GetThoughts(i);
+}
+
+const char* GetCurrentJob(int i) {
+	foo->GetCurrentJob(i);
 }

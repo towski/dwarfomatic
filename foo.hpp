@@ -6,7 +6,11 @@ public:
 	int a;
 	cxxFoo(int _a):a(_a){};
 	~cxxFoo(){};
-	const char* Bar(int);
+	int Size();
+	const char* GetFirstName(int);
+	const char* GetThoughts(int);
+	const char* GetHappiness(int);
+	const char* GetCurrentJob(int);
 	void Init();
 };
 

@@ -8,7 +8,10 @@ extern "C" {
 	typedef void* Foo;
 	Foo FooInit(void);
 	void FooFree(Foo);
-	const char* FooBar(int);
+    int Size();
+	const char* GetFirstName(int);
+	const char* GetThoughts(int);
+	const char* GetCurrentJob(int);
 
 #ifdef __cplusplus
 }
