@@ -1,0 +1,56 @@
+<html>
+<head> <meta charset="utf-8"> </head>
+<body>
+<table>
+<tr>
+<td>
+<form action='/df/artery/submit_reaction' id='submit_reaction'>
+<input type='hidden' id='name' name='name'/>
+<input type='text' onkeyup="
+  var element = document.getElementById('jobs')
+  element.firstItem = null
+  for(i = 0; i < element.children.length; i++){
+    var child = element.children[i]
+    if(child.innerHTML.match(new RegExp(event.target.value, 'i'))){
+      if(element.firstItem == null){
+        element.firstItem = child
+      }
+      child.style.cssText = 'display:block'
+    } else {
+      child.style.cssText = 'display:none'
+    }
+  }
+"
+
+onkeypress="
+  var element = document.getElementById('jobs')
+  var name = document.getElementById('name')
+  var form = document.getElementById('submit_reaction')
+  name.value = ''
+  var input = event.target.value
+  if (event.keyCode == 13) {
+    if(element.firstItem != null){
+      name.value = element.firstItem.innerHTML
+      element.firstItem = null
+      input.disabled = 'disabled'
+      form.submit()
+      console.log('enter')
+    }
+    return false
+  }
+"/>
+</form>
+<ul style='list-style:none' id='jobs'>
+{{range $index, $obj := .Captions}} 
+  <li>
+  {{$obj}}
+  </li>
+{{else}}
+  <li> No posts </li>
+{{end}}
+</ul>
+</td>
+</tr>
+</table>
+</body>
+</html>

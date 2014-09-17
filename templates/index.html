@@ -1,13 +1,44 @@
 <html>
+<head> <meta charset="utf-8"> </head>
 <body>
-{{range $obj := .Posts}} 
-  {{$obj.Title}}
+<table>
+<tr>
+<td>
+<ul style='list-style:none'>
+{{range $index, $obj := .Names}} 
+  <li>
+  <a href='/df/dwarf/{{$index}}.html'>
+  {{$obj}}
+  </a>
+  </li>
 {{else}}
-  No posts
+  <li> No posts </li>
 {{end}}
-<form action='/artery/bar'>
-<input type='text' name='title'/>
-<input type='submit'/>
-</form>
+</ul>
+</td>
+<td>
+<ul style='list-style:none'>
+{{range $index, $obj := .Jobs}} 
+  <li>
+  {{$obj}}<br/>
+  </li>
+{{else}}
+  <li> No posts </li>
+{{end}}
+</ul>
+</td>
+<td>
+<ul style='list-style:none'>
+{{range $index, $obj := .Moods}} 
+  <li>
+  {{$obj}}<br/>
+  </li>
+{{else}}
+  <li> No posts </li>
+{{end}}
+</ul>
+</td>
+</tr>
+</table>
 </body>
 </html>

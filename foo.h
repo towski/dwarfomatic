@@ -9,9 +9,11 @@ extern "C" {
 	Foo FooInit(void);
 	void FooFree(Foo);
     int Size();
+	const char* GetJobType(int);
 	const char* GetFirstName(int);
 	const char* GetThoughts(int);
 	const char* GetCurrentJob(int);
+	const char* GetHappiness(int);
 
 #ifdef __cplusplus
 }

@@ -17,6 +17,10 @@ int Size() {
 	foo->Size();
 }
 
+const char* GetJobType(int i) {
+	foo->GetJobType(i);
+}
+
 const char* GetFirstName(int i) {
 	foo->GetFirstName(i);
 }
@@ -27,4 +31,8 @@ const char* GetThoughts(int i) {
 
 const char* GetCurrentJob(int i) {
 	foo->GetCurrentJob(i);
+}
+
+const char* GetHappiness(int i) {
+	foo->GetHappiness(i);
 }

@@ -7,9 +7,16 @@
 #include "RemoteClient.h"
 #include "RemoteTools.h"
 #include "BasicApi.pb.h"
+#include "MiscUtils.h"
 #include "misc_trait_type.h"
 #include "profession.h"
+#include "job_type.h"
+#include "job.h"
+#include "job_item.h"
 #include "unit_thought_type.h"
+#include "modules/Materials.h"
+#include "df/dfhack_material_category.h"
+
 #include "foo.hpp"
 //#include "library/include/df/item.h"
 dfproto::ListUnitsIn *in;
@@ -22,7 +29,9 @@ bool myfunction (int i,int j) {
     const dfproto::BasicUnitInfo* dwarf2 = &out->value(j);
     return dwarf1->profession() < dwarf2->profession(); 
 }
+
 std::vector<int> my_vector;
+std::vector<std::string> elems = std::vector<std::string>();
 
 void cxxFoo::Init(void) {
     DFHack::color_ostream_wrapper * df_network_out = new DFHack::color_ostream_wrapper(std::cout);
@@ -46,21 +55,40 @@ void cxxFoo::Init(void) {
     world_info_out = new dfproto::GetWorldInfoOut();
     get_world_info(new dfproto::EmptyMessage(), world_info_out);
 
+    std::ostringstream stream;
+    DFHack::color_ostream_wrapper *df_output = new DFHack::color_ostream_wrapper(stream);
+    network_client->run_command((*df_output), "collect_reactions", std::vector<std::string>());
+
+    std::string item;
+    std::istringstream iss(stream.str());
+    while (std::getline(iss, item, '\n')) {
+        elems.push_back(item);
+    }
+    std::cout << std::to_string(elems.size()) + "\n";
+
     enums_out = new dfproto::ListEnumsOut();
     list_enums(new dfproto::EmptyMessage(), enums_out);
-
-	std::cout << enums_out->profession(1).name() << std::endl;
-	std::cout << enums_out->unit_thought_type(3).name() << std::endl;
+    network_client->disconnect();
 
     std::vector<int>::iterator it = my_vector.begin();
     for(int i = 0; i < out->value_size(); i++){
         it = my_vector.insert(it, i);
     }
     std::sort (my_vector.begin(), my_vector.end(), myfunction);
-    //network_client->run_command((*df_network_out), "ls", std::vector<std::string>()); 
     network_client->disconnect();
 
 	std::cout<<this->a<<std::endl;
+}
+
+const char* cxxFoo::GetJobType(int i) {
+    /*std::string job_type = enums_out->job_type_type(i).name();
+    std::string item_type = enums_out->job_type_material(i).name();
+    if (job_type == "8"){//
+        return(enums_out->job_type_caption(i).name() + " " + item_type).c_str();
+    } else {
+        return " ";
+    }*/
+    return elems[i].c_str();
 }
 
 std::string output;
@@ -113,13 +141,27 @@ int cxxFoo::Size() {
     return out->value_size();
 }
 
-std::string thought_string = "";
-const char* cxxFoo::GetThoughts(int i) {
-    thought_string = "";
+const char* cxxFoo::Gender(int i) {
     const dfproto::BasicUnitInfo* dwarf = &out->value(my_vector[i]);
+    if(dwarf->gender() == 1){
+        return "He";
+    } else {
+        return "She";
+    }
+}
+
+std::string thought_string = "";
+const char* cxxFoo::GetThoughts(int j) {
+    const dfproto::BasicUnitInfo* dwarf = &out->value(my_vector[j]);
+    thought_string = Gender(j);
+    thought_string += " has been "; 
+    thought_string += GetHappiness(j);
+    thought_string += " lately. \n";
     for(int i = 0; i < dwarf->recent_events_size(); i++){
         const dfproto::UnitThought* thought = &dwarf->recent_events(i);
-        thought_string += enums_out->unit_thought_type(thought->type()).name(); // << std::endl;
+        thought_string += Gender(j);
+        thought_string += " ";
+        thought_string += enums_out->unit_thought_type_caption(thought->type()).name(); // << std::endl;
         if(thought->type() == df::unit_thought_type::Talked){
             std::string relationship = "a " + enums_out->unit_relationship_type(thought->subtype()).name();
             thought_string.replace(thought_string.find("(somebody/a pet/a spouse/...)"), sizeof("(somebody/a pet/a spouse/...)")-1, relationship);
@@ -132,6 +174,7 @@ const char* cxxFoo::GetThoughts(int i) {
             //thought_string += ENUM_ATTR_STR(unit_thought_type, caption, thought->type);
             //thought_string += std::to_string(thought->subtype);
             //thought_string += std::to_string(thought->severity);
+        //thought_string += std::to_string(thought->age());
         thought_string += ".\n";
     }
     return thought_string.c_str();

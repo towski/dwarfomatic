@@ -7,10 +7,12 @@ public:
 	cxxFoo(int _a):a(_a){};
 	~cxxFoo(){};
 	int Size();
+	const char* GetJobType(int);
 	const char* GetFirstName(int);
 	const char* GetThoughts(int);
 	const char* GetHappiness(int);
 	const char* GetCurrentJob(int);
+	const char* Gender(int);
 	void Init();
 };
 

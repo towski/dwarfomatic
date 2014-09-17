@@ -5,3 +5,6 @@ libfoo.a
 pkg
 *.o
 foo
+artery
+output
+src
