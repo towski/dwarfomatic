@@ -1,9 +1,14 @@
 # Wrapping Dwarf Fortress C++ in go
 
-build_go.sh will build the web application, which lives at /df/artery
-Build the binary with make
+Requires go to be running in 32-bit, haven't tried it with 64-bit
 
-Then ./runfoo.sh will run the data exporter to ./public/
+First
+go get github.com/towski/artery 
+build_go.sh will build it and install it to .
+./artery will start the web application
+
+Then build the exporter with make
+./runfoo.sh will export the data to ./public/
 
 The templates for building the files are in ./templates
 
