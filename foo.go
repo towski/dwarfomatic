@@ -2,13 +2,16 @@ package main
 
 // /home/towski/save/df_linux/hack/libdfhack.so /home/towski/save/df_linux/hack/liblua.so /home/towski/save/df_linux/hack/libprotobuf-lite.so /home/towski/code/howto-go-with-cpp/libfoo.a /home/towski/save/df_linux/hack/libdfhack-client.so -lstdc++
 
-// #cgo LDFLAGS: /home/towski/code/howto-go-with-cpp/libfoo.a /home/towski/save/df_linux/hack/libprotobuf-lite.so /home/towski/save/df_linux/hack/libdfhack-client.so -lstdc++ 
+// #cgo LDFLAGS: /home/towski/code/dwarfomatic/libfoo.a /home/towski/save/df_linux/hack/libprotobuf-lite.so /home/towski/save/df_linux/hack/libdfhack-client.so -lstdc++ 
 // #include "foo.h"
 import "C"
 import _ "fmt"
 import "unicode"
-import "log"
-import _ "os/exec"
+import _ "log"
+import "os"
+import "time"
+import "net/rpc"
+import "os/exec"
 import "github.com/towski/artery/write"
 import "github.com/towski/artery/post"
 
@@ -53,18 +56,65 @@ func (f GoFoo) GetHappiness(i int) string {
     return C.GoString(C.GetHappiness(C.int(i)))
 }
 
+func (f GoFoo) Update() {
+    C.Update()
+}
+
+func (f GoFoo) Exit() {
+    C.Update()
+}
+
 func (f GoFoo) Size() int {
     return (int)(C.Size())
 }
 
-func main() {
-    log.Println("Getting foo...")
+func main(){
 	foo := New()
-    log.Println("Getting client...")
     client := write.Client()
-    i := 0
+    foo.Update()
+    ProcessManagerOrders(client, foo)
+    ProcessData(client, foo)
+    stonesense_window := os.Args[1]
+    dwarf_fortress_window := os.Args[2]
+    go func(){
+        var cmd *exec.Cmd
+        for {
+            time.Sleep(2000 * time.Millisecond)
+            cmd = exec.Command("./capture_screenshot.sh", stonesense_window, "stonesense.png")
+            cmd.Run()
+            cmd = exec.Command("./capture_screenshot.sh", dwarf_fortress_window, "screenshot.png")
+            cmd.Run()
+        }
+    }()
+    go func(){
+        var cmd *exec.Cmd
+        for {
+            time.Sleep(10000 * time.Millisecond)
+            cmd = exec.Command("/home/towski/save/df_linux/dfhack-run", "show_orders")
+            cmd.Run()
+        }
+    }()
+    for {
+        time.Sleep(500 * time.Millisecond)
+        foo.Update()
+        ProcessData(client, foo)
+    }
+	foo.Free()
+}
+
+func ProcessManagerOrders(client *rpc.Client, foo GoFoo){
     job_html := post.JobHtml{}
     job_html.Captions = make([]string, 0)
+    i := 0
+    for i < 2858 {
+        job_html.Captions = append(job_html.Captions, foo.GetJobType(i))
+        i += 1
+    }
+    client.Call("BuildServer.BuildJobs", job_html, nil)
+}
+
+func ProcessData(client *rpc.Client, foo GoFoo) {
+    i := 0
     df_html := post.DFHtml{}
     df_html.Names = make([]string, 0)
     df_html.Jobs = make([]string, 0)
@@ -90,14 +140,8 @@ func main() {
         client.Call("BuildServer.BuildDwarf", dwarf_html, nil)
         i++;
     }
-    log.Println("Last call...")
     client.Call("BuildServer.BuildDF", df_html, nil)
     i = 0
-    for i < 2870 {
-        job_html.Captions = append(job_html.Captions, foo.GetJobType(i))
-        i += 1
-    }
-    client.Call("BuildServer.BuildJobs", job_html, nil)
-	foo.Free()
-    log.Println("done")
+    cmd := exec.Command("update_game_log.sh")
+    _ = cmd.Run()
 }

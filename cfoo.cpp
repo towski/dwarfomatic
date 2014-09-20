@@ -36,3 +36,11 @@ const char* GetCurrentJob(int i) {
 const char* GetHappiness(int i) {
 	foo->GetHappiness(i);
 }
+
+void Update() {
+    foo->Update();
+}
+
+void Exit() {
+    foo->Exit();
+}

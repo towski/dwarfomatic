@@ -6,6 +6,7 @@
 <td>
 <form action='/df/artery/submit_reaction' id='submit_reaction'>
 <input type='hidden' id='name' name='name'/>
+<input type='hidden' id='name' name='command' value='submit_reaction'/>
 <input type='text' onkeyup="
   var element = document.getElementById('jobs')
   element.firstItem = null
@@ -30,7 +31,7 @@ onkeypress="
   var input = event.target.value
   if (event.keyCode == 13) {
     if(element.firstItem != null){
-      name.value = element.firstItem.innerHTML
+      name.value = element.firstItem.innerHTML.trim()
       element.firstItem = null
       input.disabled = 'disabled'
       form.submit()

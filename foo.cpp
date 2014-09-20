@@ -32,15 +32,15 @@ bool myfunction (int i,int j) {
 
 std::vector<int> my_vector;
 std::vector<std::string> elems = std::vector<std::string>();
+DFHack::RemoteFunction<dfproto::ListUnitsIn, dfproto::ListUnitsOut> list_units;
+DFHack::RemoteFunction<dfproto::EmptyMessage, dfproto::GetWorldInfoOut> get_world_info;
+DFHack::color_ostream_wrapper * df_network_out = new DFHack::color_ostream_wrapper(std::cout);
+DFHack::RemoteClient * network_client = new DFHack::RemoteClient(df_network_out);
 
 void cxxFoo::Init(void) {
-    DFHack::color_ostream_wrapper * df_network_out = new DFHack::color_ostream_wrapper(std::cout);
-    DFHack::RemoteClient * network_client = new DFHack::RemoteClient(df_network_out);
     network_client->connect();
-    DFHack::RemoteFunction<dfproto::ListUnitsIn, dfproto::ListUnitsOut> my_call;
-    DFHack::RemoteFunction<dfproto::EmptyMessage, dfproto::GetWorldInfoOut> get_world_info;
     DFHack::RemoteFunction<dfproto::EmptyMessage, dfproto::ListEnumsOut> list_enums;
-    my_call.bind(network_client, "ListUnits");
+    list_units.bind(network_client, "ListUnits");
     get_world_info.bind(network_client, "GetWorldInfo");
     list_enums.bind(network_client, "ListEnums");
     in = new dfproto::ListUnitsIn();
@@ -50,14 +50,13 @@ void cxxFoo::Init(void) {
     in->set_alive(true);
     in->mutable_mask()->set_profession(true);
     in->mutable_mask()->set_misc_traits(true);
-    my_call(in, out);
     //my_call(network_client->default_output(), dfproto::ListUnitsIn::default_instance, dfproto::ListUnitsOut::default_instance);
     world_info_out = new dfproto::GetWorldInfoOut();
-    get_world_info(new dfproto::EmptyMessage(), world_info_out);
 
     std::ostringstream stream;
     DFHack::color_ostream_wrapper *df_output = new DFHack::color_ostream_wrapper(stream);
     network_client->run_command((*df_output), "collect_reactions", std::vector<std::string>());
+
 
     std::string item;
     std::istringstream iss(stream.str());
@@ -68,18 +67,26 @@ void cxxFoo::Init(void) {
 
     enums_out = new dfproto::ListEnumsOut();
     list_enums(new dfproto::EmptyMessage(), enums_out);
-    network_client->disconnect();
 
+	std::cout<<this->a<<std::endl;
+}
+
+void cxxFoo::Update() {
+    get_world_info(new dfproto::EmptyMessage(), world_info_out);
+    list_units(in, out);
+    my_vector.clear();
     std::vector<int>::iterator it = my_vector.begin();
     for(int i = 0; i < out->value_size(); i++){
         it = my_vector.insert(it, i);
     }
     std::sort (my_vector.begin(), my_vector.end(), myfunction);
-    network_client->disconnect();
-
-	std::cout<<this->a<<std::endl;
 }
 
+void cxxFoo::Exit() {
+    network_client->disconnect();
+}
+
+// TODO: size of elems can change based on world
 const char* cxxFoo::GetJobType(int i) {
     /*std::string job_type = enums_out->job_type_type(i).name();
     std::string item_type = enums_out->job_type_material(i).name();
@@ -88,13 +95,18 @@ const char* cxxFoo::GetJobType(int i) {
     } else {
         return " ";
     }*/
-    return elems[i].c_str();
+    if(i < elems.size()){
+        return elems[i].c_str();
+    } else {
+        return " ";
+    }
 }
 
 std::string output;
 const char* cxxFoo::GetFirstName(int i) {
     const dfproto::BasicUnitInfo* dwarf = &out->value(my_vector[i]);
     output = dwarf->name().first_name() + " " + dwarf->name().last_name() + " \n" + dwarf->profession_name(); 
+    output[0] = toupper(output[0]);
     return output.c_str();
     //return (dwarf->name().first_name() + " " + dwarf->name().last_name() + " " + dwarf->thought_string()).c_str();
 }

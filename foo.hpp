@@ -14,6 +14,8 @@ public:
 	const char* GetCurrentJob(int);
 	const char* Gender(int);
 	void Init();
+	void Update();
+	void Exit();
 };
 
 #endif

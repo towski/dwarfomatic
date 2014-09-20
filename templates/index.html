@@ -1,7 +1,30 @@
 <html>
-<head> <meta charset="utf-8"> </head>
+<head> <meta charset="utf-8">
+<style>
+  body {
+    font-family: Helvetica;
+  }
+
+  table td, table td * {
+      vertical-align: top;
+  }
+</style>
+</head>
 <body>
-<table>
+<h4>Dwarf Fortress</h4>
+<p>
+<a href='/df/jobs.html'>Submit new job</a> |
+<a href='/df/screenshot.png'>Dwarf Cam</a> |
+<img src='/df/screenshot_thumb.png'/>
+<a href='/df/stonesense.png'>Stone Cam</a> |
+<img src='/df/stonesense_thumb.png'/>
+<a href='/df/gamelog.txt'>Game log</a>
+</p>
+<table style='min-height:600px; vertical-align:top; width: 100%'>
+<tr>
+<td>
+<h3 style='margin-left: 280px'>Dwarf Roll Call</h3>
+<table style='vertical-align:top; min-height:600px;'>
 <tr>
 <td>
 <ul style='list-style:none'>
@@ -37,6 +60,13 @@
   <li> No posts </li>
 {{end}}
 </ul>
+</td>
+</tr>
+</table>
+</td>
+<td>
+<h3> Current Jobs </h3>
+<iframe src='/df/orders.html' frameborder="0" style='min-height:500px;'/>
 </td>
 </tr>
 </table>
