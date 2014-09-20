@@ -1,7 +1,11 @@
-# Wrapping C++ with Go
+# Wrapping Dwarf Fortress C++ in go
 
-This is a minimal example of how to wrap a C++ class manually with Go.
+build_go.sh will build the web application, which lives at /df/artery
+Build the binary with make
 
-I borrowed most of the code from [a stack overflow answer](http://stackoverflow.com/questions/1713214/how-to-use-c-in-go),
-but modified it to use static linking.
+Then ./runfoo.sh will run the data exporter to ./public/
+
+The templates for building the files are in ./templates
+
+I borrowed most of the code from [a stack overflow answer](http://stackoverflow.com/questions/1713214/how-to-use-c-in-go), but modified it to use static linking.
 
