@@ -1,6 +1,6 @@
 drop table IF EXISTS `User`;
 CREATE TABLE User (
-    Title VARCHAR(20), 
+    Name VARCHAR(20), 
     Id BIGINT AUTO_INCREMENT,
     PRIMARY KEY (id)
 );

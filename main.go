@@ -8,7 +8,7 @@ import dwarfomatic "github.com/towski/dwarfomatic/classes"
 func DataInit()  {
     artery.Dbmap_global.AddTableWithName(dwarfomatic.Dwarf{}, "Dwarf").SetKeys(false, "Id")
     data_server := artery.NewDataServer()
-    data_server.Register(&dwarfomatic.DwarfServer{})
+    data_server.Register(&dwarfomatic.Dwarf{})
     go data_server.Start()
 }
 

@@ -86,15 +86,16 @@ func (f GoFoo) Paused() int {
 
 var running bool = true
 var data_client *rpc.Client
+var foo GoFoo
 
 func main(){
     var wg sync.WaitGroup
-	foo := New()
+	foo = New()
     client := write.Client()
     data_client = server.DataClient()
     foo.Update()
-    ProcessManagerOrders(client, foo)
-    ProcessData(client, foo)
+    ProcessManagerOrders(client)
+    ProcessData(client)
     stonesense_window := os.Args[1]
     dwarf_fortress_window := os.Args[2]
     wg.Add(1)
@@ -125,7 +126,7 @@ func main(){
         for running == true{
             time.Sleep(500 * time.Millisecond)
             foo.Update()
-            ProcessData(client, foo)
+            ProcessData(client)
         }
         wg.Done()
     }()
@@ -148,13 +149,24 @@ func main(){
             i := 0
             mutex.Lock()
             for i < foo.Size() {
-                image_cmd := exec.Command("convert", "/tmp/output_dwarf" + strconv.Itoa(foo.GetId(i)) + ".bmp", "./public/" + strconv.Itoa(foo.GetId(i)) + ".jpg")
-                _ = image_cmd.Run()
-                image_cmd = exec.Command("convert", "-resize", "32x32", "/tmp/output_dwarf" + strconv.Itoa(foo.GetId(i)) + ".bmp", "./public/" + strconv.Itoa(foo.GetId(i)) + "_thumb.jpg")
-                _ = image_cmd.Run()
+                ProcessAvatars(i)
                 i += 1
             }
             mutex.Unlock()
+        }
+        wg.Done()
+    }()
+    go func(){
+        wg.Add(1)
+        for running == true{
+            i := 0
+            mutex.Lock()
+            for i < foo.Size() {
+                data_client.Call("DwarfServer.Insert", GetDwarf(i), nil)
+                i += 1
+            }
+            mutex.Unlock()
+            time.Sleep(100000 * time.Millisecond)
         }
         wg.Done()
     }()
@@ -162,7 +174,31 @@ func main(){
     foo.Exit()
 }
 
-func ProcessManagerOrders(client *rpc.Client, foo GoFoo){
+func GetDwarf(i int) (*dwarfomatic.Dwarf){
+    current_job := foo.GetCurrentJob(i)
+    new_string := ""
+    for _, charo := range current_job {
+        if(unicode.IsUpper(charo)){
+            new_string += " "
+        }
+        new_string += string(charo)
+    }
+    dwarf := dwarfomatic.Dwarf{}
+    dwarf.Name = foo.GetFirstName(i)
+    dwarf.Job = new_string
+    dwarf.Mood = foo.GetHappiness(i)
+    dwarf.Id = foo.GetId(i)
+    return &dwarf
+}
+
+func ProcessAvatars(i int){
+    image_cmd := exec.Command("convert", "/tmp/output_dwarf" + strconv.Itoa(foo.GetId(i)) + ".bmp", "./public/" + strconv.Itoa(foo.GetId(i)) + ".jpg")
+    _ = image_cmd.Run()
+    image_cmd = exec.Command("convert", "-resize", "32x32", "/tmp/output_dwarf" + strconv.Itoa(foo.GetId(i)) + ".bmp", "./public/" + strconv.Itoa(foo.GetId(i)) + "_thumb.jpg")
+    _ = image_cmd.Run()
+}
+
+func ProcessManagerOrders(client *rpc.Client){
     job_html := dwarfomatic.JobHtml{}
     job_html.Captions = make([]string, 0)
     i := 0
@@ -173,7 +209,7 @@ func ProcessManagerOrders(client *rpc.Client, foo GoFoo){
     client.Call("ABuildServer.BuildJobs", job_html, nil)
 }
 
-func ProcessData(client *rpc.Client, foo GoFoo) {
+func ProcessData(client *rpc.Client) {
     i := 0
     df_html := dwarfomatic.DFHtml{}
     df_html.Paused = foo.Paused()
@@ -181,25 +217,12 @@ func ProcessData(client *rpc.Client, foo GoFoo) {
     for i < foo.Size() {
         dwarf_html := dwarfomatic.DwarfHtml{}
         dwarf_html.Thoughts = foo.GetThoughts(i)
-        current_job := foo.GetCurrentJob(i)
-        new_string := ""
-        for _, charo := range current_job {
-            if(unicode.IsUpper(charo)){
-                new_string += " "
-            }
-            new_string += string(charo)
-        }
-        dwarf_html.CurrentJob = new_string
-        dwarf := dwarfomatic.Dwarf{}
-        dwarf.Name = foo.GetFirstName(i)
-        dwarf.Job = new_string
-        dwarf.Mood = foo.GetHappiness(i)
-        dwarf.Id = foo.GetId(i)
-        df_html.Dwarves = append(df_html.Dwarves, dwarf)
+        dwarf := GetDwarf(i)
+        df_html.Dwarves = append(df_html.Dwarves, *dwarf)
+        dwarf_html.CurrentJob = dwarf.Job
         dwarf_html.Id = foo.GetId(i)
         dwarf_html.Name = foo.GetFirstName(i)
         dwarf_html.Happiness = foo.GetHappiness(i)
-        data_client.Call("DwarfServer.Insert", dwarf, nil)
         client.Call("ABuildServer.BuildDwarf", dwarf_html, nil)
         i++;
     }
