@@ -3,7 +3,7 @@
 TARGET=how
 
 $(TARGET): libfoo.a
-	~/save/go/bin/go build foo.go
+	~/save/go/bin/go build client.go
 
 libfoo.a: foo.o cfoo.o  #_obj/_cgo_.o
 	ar r $@ $^
