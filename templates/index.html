@@ -4,6 +4,8 @@
   body {
     font-family: Helvetica;
   }
+  table td, table td * {
+  }
 
   table td, table td * {
       vertical-align: top;
@@ -12,60 +14,48 @@
 </head>
 <body>
 <h4>Dwarf Fortress</h4>
+<a href='/'>Home</a>
 <p>
 <a href='/df/jobs.html'>Submit new job</a> |
 <a href='/df/screenshot.png'>Dwarf Cam</a> |
 <img src='/df/screenshot_thumb.png'/>
 <a href='/df/stonesense.png'>Stone Cam</a> |
 <img src='/df/stonesense_thumb.png'/>
-<a href='/df/gamelog.txt'>Game log</a>
+<a href='/df/gamelog.txt'>Game log</a> 
+{{ if .Paused }}
+| Paused!
+{{ end }}
 </p>
 <table style='min-height:600px; vertical-align:top; width: 100%'>
 <tr>
 <td>
 <h3 style='margin-left: 280px'>Dwarf Roll Call</h3>
-<table style='vertical-align:top; min-height:600px;'>
+<table style='vertical-align:top;'>
+{{range $obj := .Dwarves}} 
 <tr>
 <td>
-<ul style='list-style:none'>
-{{range $index, $obj := .Names}} 
-  <li>
-  <a href='/df/dwarf/{{$index}}.html'>
-  {{$obj}}
+  <a href='/df/dwarf/{{ $obj.Id }}.html'>
+    <img src='/df/{{ $obj.Id }}_thumb.jpg'/>
   </a>
-  </li>
-{{else}}
-  <li> No posts </li>
-{{end}}
-</ul>
 </td>
 <td>
-<ul style='list-style:none'>
-{{range $index, $obj := .Jobs}} 
-  <li>
-  {{$obj}}<br/>
-  </li>
-{{else}}
-  <li> No posts </li>
-{{end}}
-</ul>
+  <a href='/df/dwarf/{{ $obj.Id }}.html'>
+  {{ $obj.Name }}
+  </a>
 </td>
 <td>
-<ul style='list-style:none'>
-{{range $index, $obj := .Moods}} 
-  <li>
-  {{$obj}}<br/>
-  </li>
-{{else}}
-  <li> No posts </li>
-{{end}}
-</ul>
+  {{ $obj.Job }}
+</td>
+<td>
+  {{ $obj.Mood }}
 </td>
 </tr>
+{{else}}
+  <a> No dwarves </a>
+{{end}}
 </table>
 </td>
 <td>
-<h3> Current Jobs </h3>
 <iframe src='/df/orders.html' frameborder="0" style='min-height:500px;'/>
 </td>
 </tr>

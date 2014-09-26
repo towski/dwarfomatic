@@ -16,8 +16,8 @@
 #include "unit_thought_type.h"
 #include "modules/Materials.h"
 #include "df/dfhack_material_category.h"
-
 #include "foo.hpp"
+
 //#include "library/include/df/item.h"
 dfproto::ListUnitsIn *in;
 dfproto::ListUnitsOut *out;
@@ -72,7 +72,13 @@ void cxxFoo::Init(void) {
 }
 
 void cxxFoo::Update() {
-    get_world_info(new dfproto::EmptyMessage(), world_info_out);
+    //out = new dfproto::ListUnitsOut();
+    int result = get_world_info(new dfproto::EmptyMessage(), world_info_out);
+    if(result != 0){
+        std::cout << " failed to get world!" << result << "\n";
+        network_client->disconnect();
+        exit(1);
+    }
     list_units(in, out);
     my_vector.clear();
     std::vector<int>::iterator it = my_vector.begin();
@@ -80,6 +86,10 @@ void cxxFoo::Update() {
         it = my_vector.insert(it, i);
     }
     std::sort (my_vector.begin(), my_vector.end(), myfunction);
+}
+
+bool cxxFoo::Paused() {
+    return world_info_out->pause_state();
 }
 
 void cxxFoo::Exit() {
@@ -111,6 +121,10 @@ const char* cxxFoo::GetFirstName(int i) {
     //return (dwarf->name().first_name() + " " + dwarf->name().last_name() + " " + dwarf->thought_string()).c_str();
 }
 
+int cxxFoo::GetId(int i) {
+    const dfproto::BasicUnitInfo* dwarf = &out->value(my_vector[i]);
+    return dwarf->unit_id();
+}
 
 const char* cxxFoo::GetHappiness(int i) {
     const dfproto::BasicUnitInfo* dwarf = &out->value(my_vector[i]);

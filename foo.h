@@ -14,8 +14,10 @@ extern "C" {
 	const char* GetThoughts(int);
 	const char* GetCurrentJob(int);
 	const char* GetHappiness(int);
+    int GetId(int);
     void Update();
     void Exit();
+    int Paused();
 
 #ifdef __cplusplus
 }

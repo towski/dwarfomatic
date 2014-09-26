@@ -37,10 +37,18 @@ const char* GetHappiness(int i) {
 	foo->GetHappiness(i);
 }
 
+int GetId(int i) {
+	foo->GetId(i);
+}
+
 void Update() {
     foo->Update();
 }
 
 void Exit() {
     foo->Exit();
+}
+
+int Paused() {
+    foo->Paused();
 }

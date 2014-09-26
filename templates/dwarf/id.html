@@ -12,13 +12,20 @@ p {
 </head>
 <body>
 <a href='/df/index.html'>Home</a>
+<table>
+<tr>
+<td>
 <p>
+<img src='/df/{{.Id}}.jpg'/>
 {{.Name}}
 <br/>
 </p>
 <p>
 {{.Thoughts}} 
 </p>
-</ul>
+</td>
+<td>
+<iframe src='/df/dwarf/{{.Id}}/items.html' frameborder='0' height='100%' scrolling='no' style='min-height:400px'/>
+</td>
 </body>
 </html>

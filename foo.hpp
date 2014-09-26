@@ -11,11 +11,13 @@ public:
 	const char* GetFirstName(int);
 	const char* GetThoughts(int);
 	const char* GetHappiness(int);
+    int GetId(int);
 	const char* GetCurrentJob(int);
 	const char* Gender(int);
 	void Init();
 	void Update();
 	void Exit();
+	bool Paused();
 };
 
 #endif
