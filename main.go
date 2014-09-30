@@ -12,6 +12,7 @@ import artery "github.com/towski/artery/server"
 import dwarfomatic "github.com/towski/dwarfomatic/classes"
 import "github.com/gorilla/securecookie"
 
+
 var s *securecookie.SecureCookie
 
 func Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -92,6 +93,7 @@ func SetCookieHandler(w http.ResponseWriter, r *http.Request, user_id string) {
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
     user := &dwarfomatic.User{Name:r.FormValue("name"),Password:r.FormValue("password")}
+    user.Password = string(dwarfomatic.HashPassword([]byte(user.Password)))
     _, _, _ = net.SplitHostPort(r.RemoteAddr)
     //user.Ip = ip
     if(user.Insert()){
@@ -144,6 +146,11 @@ func main (){
     if(secret == ""){
         log.Fatal("must set a DWARFOMATIC_COOKIE_SECRET")
     }
+    pass_salt := os.Getenv("DWARFOMATIC_SALT")
+    if(pass_salt == ""){
+        log.Fatal("must set a DWARFOMATIC_SALT")
+    }
+    dwarfomatic.Salt = []byte(pass_salt)
     var hashKey = []byte(secret)
     s = securecookie.New(hashKey, nil)
     DataInit()

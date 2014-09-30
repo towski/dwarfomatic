@@ -1,7 +1,7 @@
 drop table IF EXISTS `User`;
 CREATE TABLE User (
     Name VARCHAR(20), 
-    Password VARCHAR(30), 
+    Password VARCHAR(100), 
     Ip VARCHAR(30), 
     Id BIGINT AUTO_INCREMENT,
     PRIMARY KEY (id)

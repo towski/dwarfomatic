@@ -7,7 +7,17 @@ import _ "errors"
 import _ "strconv"
 import "reflect"
 import "strings"
+import "fmt"
 import "database/sql"
+import "code.google.com/p/go.crypto/pbkdf2"
+import "crypto/sha256"
+
+var Salt []byte
+
+
+func HashPassword(password []byte) string {
+    return fmt.Sprintf("%x", pbkdf2.Key(password, Salt, 4096, sha256.Size, sha256.New))
+}
 
 type User struct {
     Name string
@@ -47,7 +57,7 @@ func UserFindByName(name string) (*User) {
 
 
 func (u *User) Authenticate(password string) bool {
-    return u.Password == password
+    return HashPassword([]byte(password)) == u.Password
 }
 
 type CustomIntType int
