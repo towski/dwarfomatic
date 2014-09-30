@@ -1,2 +1,2 @@
 #!/bin/bash
-mysql -u root -p asphalt 
+mysql -u root -pmysql dwarfomatic 

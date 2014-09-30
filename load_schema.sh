@@ -1,2 +1,2 @@
 #!/bin/bash
-mysql -u root -p asphalt < sql/schema.sql
+mysql -u root -pmysql $1 < sql/schema.sql

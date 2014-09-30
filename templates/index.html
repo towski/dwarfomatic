@@ -1,10 +1,10 @@
 <html>
 <head> <meta charset="utf-8">
+<script src='/df/javascripts/all.js' ></script>
+<script src='/df/javascripts/index.js' ></script>
 <style>
   body {
     font-family: Helvetica;
-  }
-  table td, table td * {
   }
 
   table td, table td * {
@@ -14,9 +14,11 @@
 </head>
 <body>
 <h4>Dwarf Fortress</h4>
-<a href='/'>Home</a>
+<a id='register' href='/df/user/new.html' style='display:none'/>Register</a>
+<a id='your_dwarf' href='/df/user/index.html' style='display:none'/>Your Dwarf</a>
+<a id='logout' href='' onclick='eraseCookie("cookie-name")' style='display:none'/>Logout</a>
+<a id='login' href='/df/user/login.html' style='display:none'/>Login</a>
 <p>
-<a href='/df/jobs.html'>Submit new job</a> |
 <a href='/df/screenshot.png'>Dwarf Cam</a> |
 <img src='/df/screenshot_thumb.png'/>
 <a href='/df/stonesense.png'>Stone Cam</a> |
@@ -29,10 +31,10 @@
 <table style='min-height:600px; vertical-align:top; width: 100%'>
 <tr>
 <td>
-<h3 style='margin-left: 280px'>Dwarf Roll Call</h3>
+<h3 style='margin-left: 280px'>Dwarves</h3>
 <table style='vertical-align:top;'>
 {{range $obj := .Dwarves}} 
-<tr>
+<tr id='dwarf-row-{{ $obj.Id }}'>
 <td>
   <a href='/df/dwarf/{{ $obj.Id }}.html'>
     <img src='/df/{{ $obj.Id }}_thumb.jpg'/>
@@ -48,6 +50,15 @@
 </td>
 <td>
   {{ $obj.Mood }}
+</td>
+<td>
+{{/* $result = $obj.GetUserId() */}}
+{{ if not $obj.GetUserId.Valid }}
+<form action='/df/artery/set_user_dwarf' class='set_user_dwarf' style='display:none'>
+<input type='hidden' id='dwarf_id' name='dwarf_id' value='{{ $obj.Id }}'/>
+<input type='submit' value='Adopt {{ $obj.Name }}'/>
+</form>
+{{ end }}
 </td>
 </tr>
 {{else}}

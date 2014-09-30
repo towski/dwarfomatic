@@ -2,6 +2,7 @@ package classes
 
 import server "github.com/towski/artery/server"
 import "strconv"
+import _ "log"
 
 type DFHtml struct {
     Paused int
